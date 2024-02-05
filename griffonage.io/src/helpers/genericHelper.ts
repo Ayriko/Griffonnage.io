@@ -1,18 +1,12 @@
-import * as wordListData from './wordList.json';
+export const getRandom = (array: any[], number: number) => {
 
-export const getRandomWords = () => {
-  const wordList = wordListData;
-  const uniqueWords: Set<string> = new Set();
-  const max = wordList.length;
+  const shuffled = array.sort(() => 0.5 - Math.random());
+  let selected = shuffled.slice(0, number);
 
-  while (uniqueWords.size < 3) {
-    const randomIndex = Math.floor(Math.random() * max);
-    uniqueWords.add(wordList[randomIndex]);
-  }
-
-  return Array.from(uniqueWords);
-
+  return selected;
 }
+
+
 
 
 

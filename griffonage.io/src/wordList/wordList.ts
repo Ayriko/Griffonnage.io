@@ -1,4 +1,4 @@
-[
+export default [
     "Chat", "Maison", "Avion", "Arbre", "Montagne", "Voiture", "Soleil", "Étoile", "Plage", "Ordinateur",
     "Livre", "Gâteau", "Éléphant", "Bateau", "Basket-ball", "Piano", "Arc-en-ciel", "Champignon", "Oiseau", "Chapeau",
     "Caméra", "Fusée", "Ciseaux", "Poisson", "Écouteurs", "Lapin", "Robot", "Téléphone", "Grenouille", "Vélo",
@@ -20,5 +20,5 @@
     "Coffre au trésor", "Toile d'araignée", "Microphone", "Étagère", "Tête de mort", "Tambourin", "Chaussette", "Labyrinthe", "Fauteuil",
     "Cadenas", "Étiquette", "Cuirassé", "Toupie", "Nid", "Râteau", "Balance", "Thermomètre", "Verre à cocktail", "Moustache",
     "Marionnette", "Champ de maïs", "Gâteau au fromage", "Gourde", "Ampoule économique"
-]
+];
   
