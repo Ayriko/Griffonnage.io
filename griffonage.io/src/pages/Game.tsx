@@ -16,6 +16,7 @@ const Game = () => {
             <GameCanvas />
             <Chat />
         <Link to="/"><button type="button" className="m-10 p-2 border-4 border-black rounded-2xl" onClick={endGame}>Retour</button></Link>
+        <Link to="/"><button type="button" className="m-10 p-2 border-4 border-black rounded-2xl" onClick={() => endGame()}>Retour</button></Link>
         {
             (Word) ?
                 <WordToGuess/>
