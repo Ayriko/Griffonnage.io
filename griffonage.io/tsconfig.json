@@ -26,6 +26,9 @@
 
     // Some stricter flags
     "useUnknownInCatchVariables": true,
-    "noPropertyAccessFromIndexSignature": true
+    "noPropertyAccessFromIndexSignature": true,
+
+    // Allow importing JSON
+    "resolveJsonModule": true,
   }
 }

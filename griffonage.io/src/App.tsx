@@ -1,11 +1,12 @@
 import './App.css';
 import {RouterProvider} from "react-router-dom";
 import router from "./config/Router.tsx";
+import {GameProvider} from "./contexts/GameContext.tsx";
 
 const App = () => (
-    <div className="">
+    <GameProvider>
         <RouterProvider router={router}/>
-    </div>
+    </GameProvider>
 );
 
 export default App;
