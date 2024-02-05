@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useGameContext } from '../../contexts/GameContext';
 
 const Timer = () => {

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, type ReactNode, type Dispatch, type SetStateAction, useEffect } from 'react';
+import React, { createContext, useState, useContext, type Dispatch, type SetStateAction, useEffect } from 'react';
 
 interface GameContextProps {
     Word: string;
