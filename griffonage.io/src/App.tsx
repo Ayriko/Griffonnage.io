@@ -9,4 +9,4 @@ const App = () => (
     </GameProvider>
 );
 
-export default App;
+export default App
