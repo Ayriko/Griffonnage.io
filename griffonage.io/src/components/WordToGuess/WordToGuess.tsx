@@ -17,12 +17,9 @@ const WordToGuess: React.FC = () => {
     }
 
   return (
-    <div className="flex justify-center items-center flex-col">
-        <h2>
+        <h2 className=''>
             {generateWord(length)}
         </h2>
-        <h2>{Word}</h2>
-    </div>
   );
 };
 

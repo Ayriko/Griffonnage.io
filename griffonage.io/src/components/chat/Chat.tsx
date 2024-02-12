@@ -24,9 +24,11 @@ const Chat: React.FC = () => {
 
 
   return (
-    <div>
+    <div className="flex flex-col-reverse w-full rounded-md ">
+      <div className="mt-auto">
+        <Form />
+      </div>
       <Events events={ fooEvents } />
-      <Form />
     </div>
   )
 }

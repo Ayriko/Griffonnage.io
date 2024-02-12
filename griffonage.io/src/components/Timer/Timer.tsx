@@ -8,14 +8,13 @@ const Timer = () => {
     <div style={{ textAlign: 'center' }}>
         <div
         style={{
-          width: '100px',
-          height: '100px',
+          width: '60px',
+          height: '60px',
           borderRadius: '50%',
           backgroundColor: 'red',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          margin: '20px auto',
         }}
       >
       <h1 style={{ color: 'white' }}>{seconds}</h1>

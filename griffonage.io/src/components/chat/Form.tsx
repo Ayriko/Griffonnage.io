@@ -21,8 +21,14 @@ const Form: React.FC = () => {
 
   return (
     <form onSubmit={ onSubmit }>
-      <input type={"text"} value={value} onChange={ e => setValue(e.target.value) } />
-      <button type="submit" disabled={ isLoading }>Submit</button>
+      <input 
+      type={"text"} 
+      value={value} 
+      onChange={ e => setValue(e.target.value) } 
+      placeholder="Tape ta supposition ici"
+      className="border border-green-500 rounded w-full py-1"
+      />
+   
     </form>
   );
 };
