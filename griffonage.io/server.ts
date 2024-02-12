@@ -4,17 +4,25 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 
+type Line = {
+  tool: string;
+  points: (number | undefined)[];
+  strokeWidth: number;
+  strokeColor: string;
+  closed: boolean;
+  fill: (string | undefined);
+};
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
 const messageHistory = [''];
+let globalLines: Line[] = [];
 
 io.on("connection", (socket: Socket) => {
-  console.log("Nouvelle connexion Socket.io");
 
-  socket.on("example-event", (data) => {
-    console.log("Client dit:", data);
+  socket.on("example-event", () => {
     socket.emit("server-response", "Réponse du serveur");
   });
 
@@ -24,8 +32,20 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on('firstConnection', () => {
-    console.log('first co')
     io.emit('getMessageHistory', messageHistory)
+  })
+
+  socket.on('getLines', () => {
+    io.emit('getLines', globalLines)
+  })
+
+  socket.on('setLines', (lines: Line[]) => {
+    globalLines = [ ...globalLines, ...lines]
+  })
+
+  socket.on('clear', () => {
+    globalLines = []
+    io.emit('clear', globalLines)
   })
 });
 
