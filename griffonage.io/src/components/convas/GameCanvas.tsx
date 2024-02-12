@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Stage, Layer, Line } from 'react-konva';
 import Konva from "konva";
+import {socket} from "../../socket.ts";
 
 
 const GameCanvas: React.FC = () => {
@@ -18,6 +19,14 @@ const GameCanvas: React.FC = () => {
     const [strokeWidth, setStrokeWidth] = React.useState(15);
     const [strokeColor, setStrokeColor] = React.useState("#000000")
     const isDrawing = React.useRef(false);
+
+    useEffect(() => {
+        socket.emit('getLines');
+
+        socket.on('getLines', (lines: Line[]) => {
+            setLines(lines)
+        })
+    }, []);
 
     const handleMouseDown = () => {
         isDrawing.current = true;
@@ -52,13 +61,24 @@ const GameCanvas: React.FC = () => {
 
     const handleMouseUp = () => {
         isDrawing.current = false;
-        console.log(lines);
+        socket.emit('setLines', lines);
+
+        socket.emit('getLines');
+
+        socket.on('getLines', (lines: Line[]) => {
+            setLines(lines.concat());
+        });
     };
 
     const handleClear = () => {
         if (stage) {
             stage.clear();
             setLines([]);
+
+            socket.emit('clear');
+            socket.on('clear', (lines: Line[]) => {
+                setLines(lines.concat())
+            })
         }
     }
 

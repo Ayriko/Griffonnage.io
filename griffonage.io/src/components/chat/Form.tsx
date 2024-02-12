@@ -9,11 +9,7 @@ const Form: React.FC = () => {
     event.preventDefault();
     setIsLoading(true);
 
-    socket.emit('message', value, () => {
-      console.log('emit message')
-      setValue('')
-      setIsLoading(false);
-    });
+    socket.emit('message', value);
 
     setValue('')
     setIsLoading(false);
