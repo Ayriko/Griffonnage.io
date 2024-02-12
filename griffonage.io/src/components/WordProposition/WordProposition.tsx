@@ -11,7 +11,7 @@ const WordProposition: React.FC = () => {
     return (
         <div className="flex justify-center items-center flex-col"
         style={{
-            width: '825px',
+            width: '1000px',
             height: '650px',
             backgroundColor: 'rgba(0, 0, 0, 0.75)', 
             borderRadius: '10px',

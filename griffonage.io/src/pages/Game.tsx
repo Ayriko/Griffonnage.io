@@ -5,27 +5,48 @@ import { useGameContext } from '../contexts/GameContext';
 import Timer from "../components/Timer/Timer";
 import Chat from "../components/chat/Chat.tsx";
 import GameCanvas from "../components/convas/GameCanvas.tsx";
+import Player from "../components/Player/Player.tsx";
+import Title from "../components/Title/Title.tsx";
 
 const Game = () => {
 
-    const {Word,endGame} = useGameContext();
+    const {Word,endGame, username} = useGameContext();
 
     return (
-    <div className="container mx-auto flex flex-col items-center">
-        <h1 className="text-center text-5xl mt-12 mb-8">P'tite game</h1>
-            <GameCanvas />
-            <Chat />
-        <Link to="/"><button type="button" className="m-10 p-2 border-4 border-black rounded-2xl" onClick={endGame}>Retour</button></Link>
-        <Link to="/"><button type="button" className="m-10 p-2 border-4 border-black rounded-2xl" onClick={() => endGame()}>Retour</button></Link>
-        {
-            (Word) ?
-                <WordToGuess/>
-            :
-                <WordProposition/>
-        }
-        <Timer/>
+
+    <div className="container mx-auto flex flex-col gap-2 items-center justify-center">
+        <div className="place-items-start">
+            <Title size="text-4xl" />
+        </div>
+        <div className="bg-white flex flex-row rounded-md items-center w-full justify-between p-2">
+            <Timer/>
+            {(Word) ? 
+                  <WordToGuess />
+                :
+                <div className="text-white">coucou</div>
+            }
+            <Link to="/">
+                <button type="button" className="p-1 border-4 border-yellow-500 rounded-2xl" onClick={() => endGame()}>Quitter le jeu</button>
+            </Link>
+        </div>
+        <div className="flex flex-row gap-2 w-full">
+            <div className="rounded-md bg-white p-3 " style={{ width: '200px',}}>
+                <Player username={username} />
+            </div>
+            <div className=" flex justify-center ">
+                {(Word) ? 
+                <GameCanvas />
+                :
+                <WordProposition />
+                }
+            </div>
+            <div className=" flex bg-white rounded-md text-left" style={{ width: '320px',}}>
+                <Chat />
+            </div>
+        </div>
     </div>
     );
 };
 
 export default Game;
+

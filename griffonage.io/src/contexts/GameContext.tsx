@@ -9,6 +9,10 @@ interface GameContextProps {
     setTimerActive : Dispatch<SetStateAction<boolean>>;
     startGame: (word: string) => void;
     endGame: () => void;
+    username : string;
+    setUsername : Dispatch<SetStateAction<string>>;
+    players : string[];
+    setPlayers: Dispatch<SetStateAction<string[]>>;
   }
 
 const GameContext = createContext<GameContextProps | undefined>(undefined);
@@ -17,6 +21,10 @@ const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const [Word, setWord] = useState('');
   const [TimerActive, setTimerActive] = useState(false);
   const [seconds, setSeconds] = useState(60);
+  const [username, setUsername] = useState('player1');
+  const [players, setPlayers] = useState<string[]>([]);
+
+  
 
 
 
@@ -42,18 +50,24 @@ const GameProvider = ({ children }: { children: React.ReactNode }) => {
     setTimerActive(true);
   }
 
+
+
   const endGame = () => {
     setWord('');
     setSeconds(60);
     setTimerActive(false);
   }
 
+  const addPlayer = (playerName: string) => {
+    setPlayers(prevPlayers => [...prevPlayers, playerName]);
+};
+
 
 
 
 
   return (
-    <GameContext.Provider value={{ Word, setWord, seconds, setSeconds, TimerActive, setTimerActive, startGame, endGame}}>
+    <GameContext.Provider value={{ Word, setWord, seconds, setSeconds, TimerActive, setTimerActive, startGame, endGame, username, setUsername, players, setPlayers}}>
       {children}
     </GameContext.Provider>
   );

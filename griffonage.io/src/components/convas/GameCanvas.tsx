@@ -78,9 +78,9 @@ const GameCanvas: React.FC = () => {
 
     return (
         <div>
-            <div className="border-4 border-black">
+            <div className="border-4 border-white bg-white rounded-md">
                 <Stage
-                    width={850}
+                    width={1000}
                     height={625}
                     onMouseDown={handleMouseDown}
                     onMouseMove={handleMouseMove}
@@ -106,7 +106,7 @@ const GameCanvas: React.FC = () => {
                         ))}
                     </Layer>
                 </Stage>
-                <div className="border-t-4 border-black">
+                <div className="border-t-2 border-black ">
                     <select
                         className="m-2"
                         value={tool}
