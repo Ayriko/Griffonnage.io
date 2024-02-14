@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { socket } from '../../socket.ts';
 import { useGameContext } from '../../contexts/GameContext.tsx';
 
 function MessageForm(): React.JSX.Element {
   const [value, setValue] = useState('');
   const { user } = useGameContext();
+  const { roomId } = useParams();
 
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    socket.emit('message', value, user.username);
+    socket.emit('message', value, user.username, roomId);
 
     setValue('');
   }

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { socket } from '../../socket.ts';
 import MessageForm from './MessageForm.tsx';
 import type { ChatMessage } from '../../types/ChatMessage.tsx';
@@ -6,20 +7,22 @@ import Chat from './Chat.tsx';
 
 function ChatHistory(): React.JSX.Element {
   const [globalChatMessage, setGlobalChatMessage] = React.useState<ChatMessage[]>([]);
+  const { roomId } = useParams();
 
   useEffect(() => {
-    function onFooEvent(value: ChatMessage[]) {
+    function onGlobaChatMessageEvent(value: ChatMessage[]) {
       setGlobalChatMessage(value);
     }
 
     socket.on('message to client', (message: ChatMessage[]) => {
-      onFooEvent(message);
+      onGlobaChatMessageEvent(message);
     });
+    console.log(roomId);
 
-    socket.emit('firstConnection');
+    socket.emit('firstConnection', roomId);
 
     socket.on('getMessageHistory', (messageHistory: ChatMessage[]) => {
-      onFooEvent(messageHistory);
+      onGlobaChatMessageEvent(messageHistory);
     });
   }, []);
 

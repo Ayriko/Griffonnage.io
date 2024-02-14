@@ -32,7 +32,7 @@ function GameProvider({ children }: { children: React.ReactNode }) {
     isMaster: false,
     role: RoleEnum.ARTIST,
     score: 0,
-    username: 'pouet',
+    username: '',
   });
 
   useEffect(() => {
