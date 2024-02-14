@@ -1,52 +1,66 @@
-import {Link} from "react-router-dom";
-import WordProposition from "../components/WordProposition/WordProposition";
-import WordToGuess from "../components/WordToGuess/WordToGuess";
-import { useGameContext } from '../contexts/GameContext';
-import Timer from "../components/Timer/Timer";
-import Chat from "../components/chat/Chat.tsx";
-import GameCanvas from "../components/convas/GameCanvas.tsx";
-import Player from "../components/Player/Player.tsx";
-import Title from "../components/Title/Title.tsx";
+import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import WordProposition from '../components/WordProposition/WordProposition.tsx';
+import WordToGuess from '../components/WordToGuess/WordToGuess.tsx';
+import { useGameContext } from '../contexts/GameContext.tsx';
+import Timer from '../components/Timer/Timer.tsx';
+import ChatHistory from '../components/chat/ChatBox.tsx';
+import GameCanvas from '../components/convas/GameCanvas.tsx';
+import Player from '../components/Player/Player.tsx';
+import Title from '../components/Title/Title.tsx';
+import { socket } from '../socket.ts';
+import type { User } from '../types/User.tsx';
 
-const Game = () => {
+function Game(): React.JSX.Element {
+  const {
+    setUser, Word, endGame,
+  } = useGameContext();
 
-    const {Word,endGame, username} = useGameContext();
+  useEffect(() => {
+    const id = parseInt(localStorage.getItem('id') ?? '0', 10);
+    socket.emit('getUserById', (id));
 
-    return (
+    socket.on('getUserById', (user: User) => {
+      setUser(user);
+    });
+  }, [setUser]);
+
+  return (
 
     <div className="container mx-auto flex flex-col gap-2 items-center justify-center">
-        <div className="place-items-start">
-            <Title size="text-4xl" />
+      <div className="place-items-start">
+        <Title size="text-4xl" />
+      </div>
+      <div className="bg-white flex flex-row rounded-md items-center w-full justify-between p-2">
+        <Timer />
+        {(Word)
+          ? <WordToGuess />
+          : <div className="text-white">coucou</div>}
+        <Link to="/">
+          <button
+            type="button"
+            className="p-1 border-4 border-yellow-500 rounded-2xl"
+            onClick={() => endGame()}
+          >
+            Quitter le jeu
+          </button>
+        </Link>
+      </div>
+      <div className="flex flex-row gap-2 w-full">
+        <div className="rounded-md bg-white p-3 " style={{ width: '200px' }}>
+          <Player />
         </div>
-        <div className="bg-white flex flex-row rounded-md items-center w-full justify-between p-2">
-            <Timer/>
-            {(Word) ? 
-                  <WordToGuess />
-                :
-                <div className="text-white">coucou</div>
-            }
-            <Link to="/">
-                <button type="button" className="p-1 border-4 border-yellow-500 rounded-2xl" onClick={() => endGame()}>Quitter le jeu</button>
-            </Link>
+        <div className=" flex justify-center ">
+          {(Word)
+            ? <GameCanvas />
+            : <WordProposition />}
         </div>
-        <div className="flex flex-row gap-2 w-full">
-            <div className="rounded-md bg-white p-3 " style={{ width: '200px',}}>
-                <Player username={username} />
-            </div>
-            <div className=" flex justify-center ">
-                {(Word) ? 
-                <GameCanvas />
-                :
-                <WordProposition />
-                }
-            </div>
-            <div className=" flex bg-white rounded-md text-left" style={{ width: '320px',}}>
-                <Chat />
-            </div>
+        <div className=" flex bg-white rounded-md text-left" style={{ width: '320px' }}>
+          <ChatHistory />
         </div>
+      </div>
     </div>
-    );
-};
+  );
+}
 
 export default Game;
-

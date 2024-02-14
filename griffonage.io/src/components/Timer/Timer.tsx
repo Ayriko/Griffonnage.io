@@ -1,12 +1,12 @@
-import { useGameContext } from '../../contexts/GameContext';
+import React from 'react';
+import { useGameContext } from '../../contexts/GameContext.tsx';
 
-const Timer = () => {
-
-    const {seconds} = useGameContext();
+function Timer(): React.JSX.Element {
+  const { seconds } = useGameContext();
 
   return (
     <div style={{ textAlign: 'center' }}>
-        <div
+      <div
         style={{
           width: '60px',
           height: '60px',
@@ -17,10 +17,10 @@ const Timer = () => {
           justifyContent: 'center',
         }}
       >
-      <h1 style={{ color: 'white' }}>{seconds}</h1>
-        </div>
+        <h1 style={{ color: 'white' }}>{seconds}</h1>
+      </div>
     </div>
   );
-};
+}
 
 export default Timer;

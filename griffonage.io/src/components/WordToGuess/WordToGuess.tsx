@@ -1,26 +1,24 @@
 import React from 'react';
-import { useGameContext } from '../../contexts/GameContext';
+import { useGameContext } from '../../contexts/GameContext.tsx';
 
+function WordToGuess(): React.JSX.Element {
+  const { Word } = useGameContext();
+  const { length } = Word;
 
-const WordToGuess: React.FC = () => {
-
-    const {Word} = useGameContext();
-    const length = Word.length;
-
-    const generateWord = (length: number) => {
-        let word = '';
-        for (let i = 0; i < length; i++) {
-            word += '_ ';
-        }
-        word += length.toString();
-        return word;
+  const generateWord = () => {
+    let word = '';
+    for (let i = 0; i < length; i += 1) {
+      word += '_ ';
     }
+    word += length.toString();
+    return word;
+  };
 
   return (
-        <h2 className=''>
-            {generateWord(length)}
-        </h2>
+    <h2 className="">
+      {generateWord()}
+    </h2>
   );
-};
+}
 
 export default WordToGuess;
