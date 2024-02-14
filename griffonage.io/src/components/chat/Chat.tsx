@@ -1,36 +1,26 @@
-import React, {useEffect, useState} from "react";
-import {socket} from "../../socket.ts";
-import Form from "./Form.tsx";
-import {Events} from "./Events.tsx";
+import React from 'react';
+import type { ChatMessage } from '../../types/ChatMessage.tsx';
 
-const Chat: React.FC = () => {
-  const [fooEvents, setFooEvents] = useState<string[]>([]);
+interface Props {
+  globalChat: ChatMessage[]
+}
 
-  useEffect(() => {
-    function onFooEvent(value: string[]) {
-      setFooEvents(value);
-    }
-
-    socket.on('message to client', (message: string[]) => {
-      onFooEvent(message)
-    });
-
-    socket.emit('firstConnection');
-
-    socket.on('getMessageHistory', (messageHistory: string[]) => {
-      onFooEvent(messageHistory)
-    });
-  }, []);
-
-
+function Chat({ globalChat }: Props): React.JSX.Element {
   return (
-    <div className="flex flex-col-reverse w-full rounded-md ">
-      <div className="mt-auto">
-        <Form />
-      </div>
-      <Events events={ fooEvents } />
-    </div>
-  )
+    <ul>
+      {
+        globalChat.map((chat, index) => (
+          <li key={`${chat.message}${chat.user}`} className={index % 2 === 0 ? 'bg-gray-200 px-1' : 'px-1'}>
+            {chat.user}
+            {' '}
+            :
+            {' '}
+            {chat.message}
+          </li>
+        ))
+      }
+    </ul>
+  );
 }
 
 export default Chat;

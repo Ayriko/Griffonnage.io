@@ -1,25 +1,22 @@
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
 
+function Avatar(): React.JSX.Element {
+  const generateRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i += 1) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
 
-const Avatar = () => {
+  const [randomColor] = React.useState(generateRandomColor);
 
-
-    const generateRandomColor = () => {
-        const letters = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    };
-
-    const [randomColor, setRandomColor] = useState(generateRandomColor);
-
-    return (
-        <FontAwesomeIcon icon={faUser} size="lg" color={randomColor} />
-    );
-};
+  return (
+    <FontAwesomeIcon icon={faUser} size="lg" color={randomColor} />
+  );
+}
 
 export default Avatar;

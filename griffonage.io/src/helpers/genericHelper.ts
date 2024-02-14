@@ -1,16 +1,8 @@
-export const getRandom = (array: any[], number: number) => {
-
+export const getRandom = (array: string[], number: number) => {
   const shuffled = array.sort(() => 0.5 - Math.random());
-  let selected = shuffled.slice(0, number);
+  const selected = shuffled.slice(0, number);
 
   return selected;
-}
+};
 
-
-
-
-
-
-  
-
-
+export default getRandom;

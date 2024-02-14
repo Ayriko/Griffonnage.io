@@ -1,8 +1,20 @@
-import {Socket} from "socket.io";
+import { Server, Socket } from 'socket.io';
+import express from 'express';
+import * as http from 'http';
 
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
+enum RoleEnum {
+  ARTIST = 'artist',
+  GUESSER = 'guesser'
+}
+
+type User = {
+  id: number,
+  username: string,
+  role: RoleEnum,
+  isMaster: boolean,
+  score: number,
+  guessed: boolean,
+}
 
 type Line = {
   tool: string;
@@ -13,40 +25,61 @@ type Line = {
   fill: (string | undefined);
 };
 
+type Chat = {
+  user: string,
+  message: string,
+}
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const messageHistory = [''];
+const messageHistory: Chat[] = [];
 let globalLines: Line[] = [];
+const users: User[] = [];
 
-io.on("connection", (socket: Socket) => {
-
-  socket.on("example-event", () => {
-    socket.emit("server-response", "Réponse du serveur");
+io.on('connection', (socket: Socket) => {
+  socket.on('setNewUser', (username: string) => {
+    users.push({
+      guessed: false,
+      id: users.length + 1,
+      isMaster: false,
+      role: RoleEnum.ARTIST,
+      score: 0,
+      username,
+    });
+    socket.emit('getUser', users[users.length - 1]);
   });
 
-  socket.on('message', (msg) => {
-    messageHistory.push(msg)
-    io.emit('message to client', messageHistory)
+  socket.on('getUserById', (id: number) => {
+    socket.emit('getUserById', users[id - 1]);
+  });
+
+  socket.on('example-event', () => {
+    socket.emit('server-response', 'Réponse du serveur');
+  });
+
+  socket.on('message', (msg: string, username: string) => {
+    messageHistory.push({ message: msg, user: username });
+    io.emit('message to client', messageHistory);
   });
 
   socket.on('firstConnection', () => {
-    io.emit('getMessageHistory', messageHistory)
-  })
+    io.emit('getMessageHistory', messageHistory);
+  });
 
   socket.on('getLines', () => {
-    io.emit('getLines', globalLines)
-  })
+    io.emit('getLines', globalLines);
+  });
 
   socket.on('setLines', (lines: Line[]) => {
-    globalLines = [ ...globalLines, ...lines]
-  })
+    globalLines = [...globalLines, ...lines];
+  });
 
   socket.on('clear', () => {
-    globalLines = []
-    io.emit('clear', globalLines)
-  })
+    globalLines = [];
+    io.emit('clear', globalLines);
+  });
 });
 
 const PORT = 5137;
