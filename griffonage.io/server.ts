@@ -34,8 +34,8 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const messageHistory: Chat[] = [];
-let globalLines: Line[] = [];
+const messageHistory: { [key: string]: Chat[] } = {};
+const globalLines: { [key: string]: Line[] } = {};
 const users: User[] = [];
 
 io.on('connection', (socket: Socket) => {
@@ -55,30 +55,38 @@ io.on('connection', (socket: Socket) => {
     socket.emit('getUserById', users[id - 1]);
   });
 
-  socket.on('example-event', () => {
-    socket.emit('server-response', 'Réponse du serveur');
+  socket.on('setupRoomId', (roomId: string) => {
+    if (!messageHistory[roomId]) {
+      messageHistory[roomId] = [];
+    }
+    if (!globalLines[roomId]) {
+      globalLines[roomId] = [];
+    }
+
+    socket.join(roomId);
   });
 
-  socket.on('message', (msg: string, username: string) => {
-    messageHistory.push({ message: msg, user: username });
-    io.emit('message to client', messageHistory);
+  socket.on('message', (msg: string, username: string, roomId: string) => {
+    messageHistory[roomId].push({ message: msg, user: username });
+    io.to(roomId).emit('message to client', messageHistory[roomId]);
   });
 
-  socket.on('firstConnection', () => {
-    io.emit('getMessageHistory', messageHistory);
+  socket.on('firstConnection', (roomId) => {
+    console.log(roomId);
+    io.to(roomId).emit('getMessageHistory', messageHistory[roomId]);
   });
 
-  socket.on('getLines', () => {
-    io.emit('getLines', globalLines);
+  socket.on('getLines', (roomId: string) => {
+    io.to(roomId).emit('getLines', globalLines[roomId]);
   });
 
-  socket.on('setLines', (lines: Line[]) => {
-    globalLines = [...globalLines, ...lines];
+  socket.on('setLines', (lines: Line[], roomId: string) => {
+    globalLines[roomId] = [...globalLines[roomId], ...lines];
   });
 
-  socket.on('clear', () => {
-    globalLines = [];
-    io.emit('clear', globalLines);
+  socket.on('clear', (roomId: string) => {
+    globalLines[roomId] = [];
+    io.to(roomId).emit('clear', globalLines);
   });
 });
 

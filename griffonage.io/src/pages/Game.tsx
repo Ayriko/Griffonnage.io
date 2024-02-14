@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import React, { useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import WordProposition from '../components/WordProposition/WordProposition.tsx';
 import WordToGuess from '../components/WordToGuess/WordToGuess.tsx';
 import { useGameContext } from '../contexts/GameContext.tsx';
@@ -12,6 +12,8 @@ import { socket } from '../socket.ts';
 import type { User } from '../types/User.tsx';
 
 function Game(): React.JSX.Element {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { roomId } = useParams();
   const {
     setUser, Word, endGame,
   } = useGameContext();
@@ -23,7 +25,14 @@ function Game(): React.JSX.Element {
     socket.on('getUserById', (user: User) => {
       setUser(user);
     });
-  }, [setUser]);
+
+    socket.emit('setupRoomId', roomId);
+    setIsLoading(false);
+  }, [roomId, setUser]);
+
+  if (isLoading) {
+    return (<p>loading</p>);
+  }
 
   return (
 

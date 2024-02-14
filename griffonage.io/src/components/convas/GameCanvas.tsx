@@ -2,6 +2,7 @@
 import Konva from 'konva';
 import React, { useEffect } from 'react';
 import { Layer, Line, Stage } from 'react-konva';
+import { useParams } from 'react-router-dom';
 import { socket } from '../../socket.ts';
 import { useGameContext } from '../../contexts/GameContext.tsx';
 import type { Line as Pouet } from '../../types/Line.tsx';
@@ -14,9 +15,10 @@ function GameCanvas(): React.JSX.Element {
   const [strokeColor, setStrokeColor] = React.useState('#000000');
   const { user } = useGameContext();
   const isDrawing = React.useRef(false);
+  const { roomId } = useParams();
 
   useEffect(() => {
-    socket.emit('getLines');
+    socket.emit('getLines', roomId);
 
     socket.on('getLines', (allLines: Pouet[]) => {
       setLines(allLines);
@@ -57,9 +59,9 @@ function GameCanvas(): React.JSX.Element {
 
   const handleMouseUp = () => {
     isDrawing.current = false;
-    socket.emit('setLines', lines);
+    socket.emit('setLines', lines, roomId);
 
-    socket.emit('getLines');
+    socket.emit('getLines', roomId);
 
     socket.on('getLines', (currentLines: Pouet[]) => {
       setLines(currentLines.concat());
@@ -71,7 +73,7 @@ function GameCanvas(): React.JSX.Element {
       stage.clear();
       setLines([]);
 
-      socket.emit('clear');
+      socket.emit('clear', roomId);
       socket.on('clear', (currentLines: Pouet[]) => {
         setLines(currentLines.concat());
       });

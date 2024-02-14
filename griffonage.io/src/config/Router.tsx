@@ -9,7 +9,7 @@ const Router = createBrowserRouter([
     element: <Homepage />,
   },
   {
-    path: '/game',
+    path: '/game/:roomId',
     // eslint-disable-next-line react/react-in-jsx-scope
     element: <Game />,
   },
