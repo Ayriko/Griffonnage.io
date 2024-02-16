@@ -5,11 +5,11 @@ import { Layer, Line, Stage } from 'react-konva';
 import { useParams } from 'react-router-dom';
 import { socket } from '../../socket.ts';
 import { useGameContext } from '../../contexts/GameContext.tsx';
-import type { Line as Pouet } from '../../types/Line.tsx';
+import type { Line as LineType } from '../../types/Line.tsx';
 
 function GameCanvas(): React.JSX.Element {
   const [tool, setTool] = React.useState('pen');
-  const [lines, setLines] = React.useState<Pouet[]>([]);
+  const [lines, setLines] = React.useState<LineType[]>([]);
   const [stage, setStage] = React.useState<Konva.Stage | null>();
   const [strokeWidth, setStrokeWidth] = React.useState(15);
   const [strokeColor, setStrokeColor] = React.useState('#000000');
@@ -20,12 +20,12 @@ function GameCanvas(): React.JSX.Element {
   useEffect(() => {
     socket.emit('getLines', roomId);
 
-    socket.on('getLines', (allLines: Pouet[]) => {
+    socket.on('emitLines', (allLines: LineType[]) => {
       setLines(allLines);
     });
-  }, [user]);
+  }, [roomId, user]);
 
-  const handleMouseDown = () => {
+  const handleMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
     isDrawing.current = true;
     // check player is the one drawing here
     if (stage) {
@@ -34,6 +34,7 @@ function GameCanvas(): React.JSX.Element {
         tool, points: [pos?.x, pos?.y], strokeWidth, strokeColor, closed: false, fill: undefined,
       }]);
     }
+    e.cancelBubble = true;
   };
 
   const handleMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
@@ -58,37 +59,46 @@ function GameCanvas(): React.JSX.Element {
   };
 
   const handleMouseUp = () => {
+    // add check user role
     isDrawing.current = false;
-    socket.emit('setLines', lines, roomId);
+    socket.emit('updateLines', lines, roomId);
 
     socket.emit('getLines', roomId);
 
-    socket.on('getLines', (currentLines: Pouet[]) => {
+    socket.on('emitLines', (currentLines: LineType[]) => {
       setLines(currentLines.concat());
     });
   };
 
   const handleClear = () => {
+    // add check user role
     if (stage) {
       stage.clear();
       setLines([]);
 
       socket.emit('clear', roomId);
-      socket.on('clear', (currentLines: Pouet[]) => {
+      socket.on('cleared', (currentLines: LineType[]) => {
         setLines(currentLines.concat());
       });
     }
   };
 
-  const handleLineClick = (index: number) => {
-    lines[index].closed = !lines[index].closed;
-    if (lines[index].closed) {
-      lines[index].fill = strokeColor;
-      setLines(lines);
-      return;
-    }
-    delete lines[index].fill;
-    setLines(lines);
+  const handleLineDown = (e: Konva.KonvaEventObject<MouseEvent>, index: number) => {
+    // add check user role
+    setLines((prevLines) => prevLines.map((line, i) => {
+      if (i === index) {
+        const updatedLine = { ...line };
+        if (!updatedLine.closed) {
+          updatedLine.fill = strokeColor;
+          updatedLine.closed = true;
+        } else {
+          updatedLine.closed = false;
+        }
+        return updatedLine;
+      }
+      return line;
+    }));
+    e.cancelBubble = true;
   };
 
   return (
@@ -116,7 +126,9 @@ function GameCanvas(): React.JSX.Element {
                 }
                 closed={line.closed}
                 fill={line.closed ? line.fill : undefined}
-                onClick={() => handleLineClick(index)}
+                onMouseDown={(e) => {
+                  handleLineDown(e, index);
+                }}
               />
             ))}
           </Layer>

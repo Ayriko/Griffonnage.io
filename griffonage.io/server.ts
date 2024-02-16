@@ -72,21 +72,20 @@ io.on('connection', (socket: Socket) => {
   });
 
   socket.on('firstConnection', (roomId) => {
-    console.log(roomId);
     io.to(roomId).emit('getMessageHistory', messageHistory[roomId]);
   });
 
   socket.on('getLines', (roomId: string) => {
-    io.to(roomId).emit('getLines', globalLines[roomId]);
+    io.to(roomId).emit('emitLines', globalLines[roomId] || []);
   });
 
-  socket.on('setLines', (lines: Line[], roomId: string) => {
-    globalLines[roomId] = [...globalLines[roomId], ...lines];
+  socket.on('updateLines', (lines: Line[], roomId: string) => {
+    globalLines[roomId] = [...lines];
   });
 
   socket.on('clear', (roomId: string) => {
     globalLines[roomId] = [];
-    io.to(roomId).emit('clear', globalLines);
+    io.to(roomId).emit('cleared', globalLines);
   });
 });
 
