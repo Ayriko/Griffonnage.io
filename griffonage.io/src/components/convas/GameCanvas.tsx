@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { socket } from '../../socket.ts';
 import { useGameContext } from '../../contexts/GameContext.tsx';
 import type { Line as LineType } from '../../types/Line.tsx';
+import { RoleEnum } from '../../types/User.tsx';
 
 function GameCanvas(): React.JSX.Element {
   const [tool, setTool] = React.useState('pen');
@@ -27,7 +28,9 @@ function GameCanvas(): React.JSX.Element {
 
   const handleMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
     isDrawing.current = true;
-    // check player is the one drawing here
+    if (user.role === RoleEnum.GUESSER) {
+      return;
+    }
     if (stage) {
       const pos = stage.getPointerPosition();
       setLines([...lines, {
@@ -59,7 +62,9 @@ function GameCanvas(): React.JSX.Element {
   };
 
   const handleMouseUp = () => {
-    // add check user role
+    if (user.role === RoleEnum.GUESSER) {
+      return;
+    }
     isDrawing.current = false;
     socket.emit('updateLines', lines, roomId);
 
@@ -71,7 +76,9 @@ function GameCanvas(): React.JSX.Element {
   };
 
   const handleClear = () => {
-    // add check user role
+    if (user.role === RoleEnum.GUESSER) {
+      return;
+    }
     if (stage) {
       stage.clear();
       setLines([]);
@@ -84,7 +91,9 @@ function GameCanvas(): React.JSX.Element {
   };
 
   const handleLineDown = (e: Konva.KonvaEventObject<MouseEvent>, index: number) => {
-    // add check user role
+    if (user.role === RoleEnum.GUESSER) {
+      return;
+    }
     setLines((prevLines) => prevLines.map((line, i) => {
       if (i === index) {
         const updatedLine = { ...line };
