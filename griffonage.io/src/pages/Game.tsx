@@ -15,20 +15,45 @@ function Game(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { roomId } = useParams();
   const {
-    setUser, Word, endGame,
+    setUser,
+    Word,
+    setWord,
+    setSeconds,
+    endGame, setRoomId,
+    setTimerActive,
+    startTimer,
   } = useGameContext();
 
   useEffect(() => {
-    const id = parseInt(localStorage.getItem('id') ?? '0', 10);
-    socket.emit('getUserById', (id));
+    const userId = parseInt(localStorage.getItem('id') ?? '0', 10);
+
+    socket.emit('setupRoom', roomId, userId);
+    setRoomId(roomId ?? '1');
+
+    socket.emit('getRoomConfig', roomId, userId);
+
+    socket.on('getRoomConfig', (word: string, secondLeft: number) => {
+      if (word) {
+        setSeconds(secondLeft);
+        setWord(word);
+        setTimerActive(true);
+        startTimer();
+      }
+    });
+
+    socket.emit('getUserById', userId);
 
     socket.on('getUserById', (user: User) => {
       setUser(user);
     });
 
-    socket.emit('setupRoomId', roomId);
     setIsLoading(false);
-  }, [roomId, setUser]);
+  }, [roomId, setRoomId, setSeconds, setTimerActive, setUser, setWord, startTimer]);
+
+  useEffect(() => () => {
+    console.log('unmount');
+    setTimerActive(false);
+  }, [setTimerActive]);
 
   if (isLoading) {
     return (<p>loading</p>);

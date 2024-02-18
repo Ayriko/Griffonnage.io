@@ -1,7 +1,8 @@
 import React, {
-  createContext, type Dispatch, type SetStateAction, useContext, useEffect, useState,
+  createContext, type Dispatch, type SetStateAction, useCallback, useContext, useState,
 } from 'react';
 import { RoleEnum, type User } from '../types/User.tsx';
+import { socket } from '../socket.ts';
 
 interface GameContextProps {
   Word: string;
@@ -13,10 +14,13 @@ interface GameContextProps {
   // eslint-disable-next-line no-unused-vars
   startGame: (word: string) => void;
   endGame: () => void;
+  startTimer: () => void;
   user: User;
   setUser: Dispatch<SetStateAction<User>>;
   players: string[];
   setPlayers: Dispatch<SetStateAction<string[]>>;
+  roomId: string;
+  setRoomId: Dispatch<SetStateAction<string>>;
 }
 
 const GameContext = createContext<GameContextProps | undefined>(undefined);
@@ -34,8 +38,9 @@ function GameProvider({ children }: { children: React.ReactNode }) {
     score: 0,
     username: '',
   });
+  const [roomId, setRoomId] = useState<string>('');
 
-  useEffect(() => {
+  const startTimer = useCallback(() => {
     // eslint-disable-next-line no-undef
     let interval: string | number | NodeJS.Timeout | undefined;
 
@@ -43,6 +48,7 @@ function GameProvider({ children }: { children: React.ReactNode }) {
       interval = setInterval(() => {
         setSeconds((prevSeconds) => prevSeconds - 1);
       }, 1000);
+      console.log('intervale', interval);
     } else {
       clearInterval(interval);
     }
@@ -53,8 +59,13 @@ function GameProvider({ children }: { children: React.ReactNode }) {
   }, [TimerActive]);
 
   const startGame = (word: string) => {
-    setWord(word);
-    setTimerActive(true);
+    socket.emit('startRound', roomId, word);
+
+    socket.on('setRound', (endDate: number) => {
+      setSeconds(endDate);
+      setWord(word);
+      setTimerActive(true);
+    });
   };
 
   const endGame = () => {
@@ -76,11 +87,14 @@ function GameProvider({ children }: { children: React.ReactNode }) {
       TimerActive,
       setTimerActive,
       startGame,
+      startTimer,
       endGame,
       user,
       setUser,
       players,
       setPlayers,
+      roomId,
+      setRoomId,
     }}
     >
       {children}

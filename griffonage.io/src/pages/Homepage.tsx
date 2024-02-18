@@ -29,9 +29,10 @@ function Homepage(): React.JSX.Element {
     event.preventDefault();
     socket.emit('setNewUser', username);
 
-    socket.on('getUser', (user: User) => {
-      setUser(user);
-      localStorage.setItem('id', String(user.id));
+    socket.on('getUser', (userData: User) => {
+      ('hein', userData);
+      setUser(userData);
+      localStorage.setItem('id', String(userData.id));
     });
   };
 
