@@ -1,49 +1,47 @@
 import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import Avatar from '../Avatar/Avatar.tsx';
 import { socket } from '../../socket.ts';
-import { useParams } from 'react-router-dom';
+import type { User } from '../../types/User.tsx';
 
 function Player(): React.JSX.Element {
-  const [players, setPlayers] = React.useState<string[]>([]);
+  const [players, setPlayers] = React.useState<User[]>([]);
 
   const { roomId } = useParams();
 
-useEffect(() => {
-  socket.emit('getPlayersByRoomId', roomId);
-  socket.on('playerList', (players: string[]) => {
-    console.log('players', players);
-    setPlayers(players);
-  });
+  useEffect(() => {
+    socket.emit('getPlayersByRoomId', roomId);
+    socket.on('playerList', (playersData: User[]) => {
+      setPlayers(playersData);
+    });
 
-  return () => {
-    socket.off('playerList');
-  };
+    return () => {
+      socket.off('playerList');
+    };
   }, [roomId]);
-
-  const score = 25;
 
   return (
     <div className="flex flex-col w-full">
 
       {players.map((player, index) => (
         <div>
-        <div key={index} className="flex flex-row justify-between">
-          <p>
+          <div key={player} className="flex flex-row justify-between">
+            <p>
+              {' '}
+              #
+              {index + 1}
+            </p>
+            <p>{player.username}</p>
+            <Avatar />
+
+          </div>
+          <div className="text-center text-sm text-gray-500">
+            {player.score}
             {' '}
-            #
-            {index + 1}
-          </p>
-          <p>{player}</p>
-          <Avatar />
-      
-      </div>
-      <div className="text-center text-sm text-gray-500">
-        {score}
-        {' '}
-        points
-      </div>
-      </div>
-  ))}
+            points
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

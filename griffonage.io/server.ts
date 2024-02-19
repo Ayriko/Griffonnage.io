@@ -57,6 +57,7 @@ io.on('connection', (socket: Socket) => {
       score: 0,
       username,
     });
+
     socket.emit('getUser', users[users.length - 1]);
   });
 
@@ -130,7 +131,7 @@ io.on('connection', (socket: Socket) => {
 
   socket.on('clear', (roomId: string) => {
     globalLines[roomId] = [];
-    io.to(roomId).emit('cleared', globalLines);
+    io.to(roomId).emit('cleared', globalLines[roomId]);
   });
 
   socket.on('getRooms', () => {
@@ -141,22 +142,43 @@ io.on('connection', (socket: Socket) => {
     currentRooms = [...roomsId];
   });
 
-  socket.on('userHasGuessed', (roomId : string, userId : string) => {
+  socket.on('userHasGuessed', (roomId: string, userId: string) => {
     rooms[roomId].guessed += 1;
     users[parseInt(userId, 10) - 1].guessed = true;
+    io.to(roomId).emit('userHasGuessed', rooms[roomId].guessed);
   });
 
-  socket.on('getPlayersByRoomId', (roomId : string) => {
+  socket.on('getPlayersByRoomId', (roomId: string) => {
     const usernamePlayers = [];
     const { players } = rooms[roomId];
     for (let i = 0; i < players.length; i += 1) {
-      usernamePlayers.push(users[parseInt(players[i], 10) - 1].username);
+      const tmp = users[parseInt(players[i], 10) - 1];
+      usernamePlayers.push(tmp);
     }
-    io.to(roomId).emit('playerList', players);
+    io.to(roomId).emit('playerList', usernamePlayers);
+  });
+
+  socket.on('endRound', (roomId: string, playerId: string) => {
+    const roomGuesser = rooms[roomId].players.filter(
+      (playerIdInRoom: string) => users[parseInt(playerIdInRoom, 10) - 1].role === RoleEnum.GUESSER,
+    );
+    const artistId = roomGuesser[Math.floor(Math.random() * roomGuesser.length)];
+    users[parseInt(artistId, 10) - 1].role = RoleEnum.ARTIST;
+
+    rooms[roomId].players.forEach((playerIdInRoom: string) => {
+      if (playerIdInRoom === artistId) {
+        return;
+      }
+      users[parseInt(playerIdInRoom, 10) - 1].role = RoleEnum.GUESSER;
+    });
+    rooms[roomId].wordToGuess = '';
+
+    io.to(roomId).emit('endRound', users[parseInt(playerId, 10) - 1]);
   });
 
   socket.on('userCreatedRoom', (id: string) => {
     users[parseInt(id, 10) - 1].isMaster = true;
+    socket.emit('userCreatedRoom', users[parseInt(id, 10) - 1]);
   });
 });
 

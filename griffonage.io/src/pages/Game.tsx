@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import WordProposition from '../components/WordProposition/WordProposition.tsx';
 import WordToGuess from '../components/WordToGuess/WordToGuess.tsx';
@@ -9,7 +9,9 @@ import GameCanvas from '../components/Convas/GameCanvas.tsx';
 import Player from '../components/Player/Player.tsx';
 import Title from '../components/Title/Title.tsx';
 import { socket } from '../socket.ts';
-import type { User } from '../types/User.tsx';
+import { RoleEnum, type User } from '../types/User.tsx';
+import GameCanvas from '../components/Convas/GameCanvas.tsx';
+import ChatHistory from '../components/Chat/ChatBox.tsx';
 
 function Game(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -52,10 +54,9 @@ function Game(): React.JSX.Element {
     });
 
     setIsLoading(false);
-  }, []);
+  }, [Word]);
 
   useEffect(() => () => {
-    console.log('unmount');
     setTimerActive(false);
   }, [setTimerActive]);
 
@@ -91,7 +92,7 @@ function Game(): React.JSX.Element {
           <Player />
         </div>
         <div className=" flex justify-center ">
-          {(Word)
+          {(Word || user.role === RoleEnum.GUESSER)
             ? <GameCanvas />
             : <WordProposition />}
         </div>

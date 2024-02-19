@@ -42,12 +42,15 @@ function Homepage(): React.JSX.Element {
     }
 
     const newGameId = (currentGames.length + 1).toString();
+
     const updatedGames = [...currentGames, newGameId];
     setCurrentGames(updatedGames);
     socket.emit('updateRooms', updatedGames);
 
     socket.emit('userCreatedRoom', localStorage.getItem('id'));
-
+    socket.on('userCreatedRoom', (userData: User) => {
+      setUser(userData);
+    });
     navigate(`/game/${newGameId}`);
   };
 

@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import { RoleEnum, type User } from '../types/User.tsx';
 import { socket } from '../socket.ts';
+import type { Line as LineType } from '../types/Line.tsx';
 
 interface GameContextProps {
   Word: string;
@@ -20,6 +21,8 @@ interface GameContextProps {
   setPlayers: Dispatch<SetStateAction<string[]>>;
   roomId: string;
   setRoomId: Dispatch<SetStateAction<string>>;
+  lines: LineType[],
+  setLines: Dispatch<SetStateAction<LineType[]>>
 }
 
 const GameContext = createContext<GameContextProps | undefined>(undefined);
@@ -38,6 +41,23 @@ function GameProvider({ children }: { children: React.ReactNode }) {
     username: '',
   });
   const [roomId, setRoomId] = useState<string>('');
+  const [lines, setLines] = React.useState<LineType[]>([]);
+
+  const endGame = () => {
+    if (user.isMaster) {
+      setSeconds(60);
+      setTimerActive(false);
+
+      const userId = localStorage.getItem('id');
+
+      socket.emit('endRound', roomId, userId ?? user.id);
+
+      socket.on('cleared', (currentLines: LineType[]) => {
+        setLines(currentLines.concat());
+      });
+    }
+    setWord('');
+  };
 
   useEffect(() => {
     // eslint-disable-next-line no-undef
@@ -49,10 +69,15 @@ function GameProvider({ children }: { children: React.ReactNode }) {
       }, 1000);
     }
 
+    if (seconds <= 0) {
+      clearInterval(interval);
+      endGame();
+    }
+
     return () => {
       clearInterval(interval);
     };
-  }, [Word]);
+  }, [Word, seconds]);
 
   const startGame = (word: string) => {
     socket.emit('startRound', roomId, word);
@@ -62,12 +87,6 @@ function GameProvider({ children }: { children: React.ReactNode }) {
       setWord(word);
       setTimerActive(true);
     });
-  };
-
-  const endGame = () => {
-    setWord('');
-    setSeconds(60);
-    setTimerActive(false);
   };
 
   return (
@@ -86,6 +105,8 @@ function GameProvider({ children }: { children: React.ReactNode }) {
       setPlayers,
       roomId,
       setRoomId,
+      lines,
+      setLines,
     }}
     >
       {children}
@@ -96,7 +117,7 @@ function GameProvider({ children }: { children: React.ReactNode }) {
 const useGameContext = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error("useMotContext doit être utilisé à l'intérieur de GameProvider");
+    throw new Error("useGameContext doit être utilisé à l'intérieur de GameProvider");
   }
   return context;
 };
