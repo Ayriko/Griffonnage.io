@@ -12,7 +12,6 @@ import { socket } from '../socket.ts';
 import type { User } from '../types/User.tsx';
 
 function Game(): React.JSX.Element {
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { roomId } = useParams();
   const {
