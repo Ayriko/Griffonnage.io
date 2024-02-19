@@ -125,6 +125,7 @@ io.on('connection', (socket: Socket) => {
     io.to(roomId).emit('getMessageHistory', messageHistory[roomId]);
   });
 
+
   socket.on('getLines', (roomId: string) => {
     io.to(roomId).emit('emitLines', globalLines[roomId] || []);
   });
@@ -144,6 +145,22 @@ io.on('connection', (socket: Socket) => {
 
   socket.on('updateRooms', (roomsId: string[]) => {
     currentRooms = [...roomsId];
+  });
+
+  socket.on('userHasGuessed', (roomId : string, userId : string) => {
+    rooms[roomId].guessed += 1;
+    users[parseInt(userId, 10) - 1].guessed = true;
+    io.to(roomId).emit('userHasGuessed', rooms[roomId].guessed);
+  });
+
+  socket.on('getPlayersByRoomId', (roomId : string) => {
+    const usernamePlayers = []
+    const players = rooms[roomId].players;
+    for (let i = 0; i < players.length; i += 1) {
+      let tmp = users[parseInt(players[i], 10) - 1];
+      usernamePlayers.push(tmp);
+    }
+    io.to(roomId).emit('playerList', usernamePlayers);
   });
 });
 
