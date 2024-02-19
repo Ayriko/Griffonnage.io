@@ -34,7 +34,7 @@ type Room = {
   wordToGuess: string,
   roundEnd: Date,
   players: string[],
-  guessed: number,
+  guessed: number
 }
 
 const app = express();
@@ -87,20 +87,15 @@ io.on('connection', (socket: Socket) => {
         (playerId) => users[parseInt(playerId, 10) - 1].role === RoleEnum.ARTIST,
       );
 
-      console.log('user artist', userArtist);
-
       users[parseInt(userId, 10) - 1].role = RoleEnum.ARTIST;
 
       if (userArtist.length) {
-        console.log('ya des artist');
         users[parseInt(userId, 10) - 1].role = RoleEnum.GUESSER;
       }
 
       rooms[roomId].players.push(userId);
       rooms[roomId].players = [...new Set(rooms[roomId].players)];
     }
-
-    console.log('rooms', rooms[roomId], users[parseInt(userId, 10) - 1]);
 
     socket.join(roomId);
   });
@@ -124,7 +119,6 @@ io.on('connection', (socket: Socket) => {
   socket.on('firstConnection', (roomId) => {
     io.to(roomId).emit('getMessageHistory', messageHistory[roomId]);
   });
-
 
   socket.on('getLines', (roomId: string) => {
     io.to(roomId).emit('emitLines', globalLines[roomId] || []);
@@ -153,12 +147,16 @@ io.on('connection', (socket: Socket) => {
   });
 
   socket.on('getPlayersByRoomId', (roomId : string) => {
-    const usernamePlayers = []
-    const players = rooms[roomId].players;
+    const usernamePlayers = [];
+    const { players } = rooms[roomId];
     for (let i = 0; i < players.length; i += 1) {
       usernamePlayers.push(users[parseInt(players[i], 10) - 1].username);
     }
     io.to(roomId).emit('playerList', players);
+  });
+
+  socket.on('userCreatedRoom', (id: string) => {
+    users[parseInt(id, 10) - 1].isMaster = true;
   });
 });
 

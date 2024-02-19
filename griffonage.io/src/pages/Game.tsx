@@ -15,6 +15,7 @@ function Game(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { roomId } = useParams();
   const {
+    user,
     setUser,
     Word,
     setWord,
@@ -61,6 +62,8 @@ function Game(): React.JSX.Element {
   if (isLoading) {
     return (<p>loading</p>);
   }
+
+  console.log(user.isMaster);
 
   return (
 

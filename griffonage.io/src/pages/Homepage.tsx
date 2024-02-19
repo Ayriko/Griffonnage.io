@@ -45,6 +45,9 @@ function Homepage(): React.JSX.Element {
     const updatedGames = [...currentGames, newGameId];
     setCurrentGames(updatedGames);
     socket.emit('updateRooms', updatedGames);
+
+    socket.emit('userCreatedRoom', localStorage.getItem('id'));
+
     navigate(`/game/${newGameId}`);
   };
 
