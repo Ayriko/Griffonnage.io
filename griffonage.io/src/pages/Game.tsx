@@ -21,15 +21,14 @@ function Game(): React.JSX.Element {
 
   useEffect(() => {
     const id = parseInt(localStorage.getItem('id') ?? '', 10);
-    if (!id) {
-      // faire pop un modal pour se créer un username
-      navigate('/');
-    }
-    console.log(id);
     socket.emit('getUserById', (id));
 
     socket.on('getUserById', (user: User) => {
-      setUser(user);
+      if (!user) {
+        navigate('/');
+      } else {
+        setUser(user);
+      }
     });
 
     socket.emit('setupRoomId', roomId);
