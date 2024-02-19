@@ -142,8 +142,8 @@ io.on('connection', (socket: Socket) => {
     io.emit('emitRooms', currentRooms || []);
   });
 
-  socket.on('updateRooms', (rooms: string[]) => {
-    currentRooms = [...rooms];
+  socket.on('updateRooms', (roomsId: string[]) => {
+    currentRooms = [...roomsId];
   });
 });
 
