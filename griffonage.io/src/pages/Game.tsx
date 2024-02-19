@@ -4,6 +4,8 @@ import WordProposition from '../components/WordProposition/WordProposition.tsx';
 import WordToGuess from '../components/WordToGuess/WordToGuess.tsx';
 import { useGameContext } from '../contexts/GameContext.tsx';
 import Timer from '../components/Timer/Timer.tsx';
+import ChatHistory from '../components/Chat/ChatBox.tsx';
+import GameCanvas from '../components/Convas/GameCanvas.tsx';
 import Player from '../components/Player/Player.tsx';
 import Title from '../components/Title/Title.tsx';
 import { socket } from '../socket.ts';
