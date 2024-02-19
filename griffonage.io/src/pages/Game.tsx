@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import WordProposition from '../components/WordProposition/WordProposition.tsx';
 import WordToGuess from '../components/WordToGuess/WordToGuess.tsx';
@@ -12,6 +12,7 @@ import GameCanvas from '../components/Convas/GameCanvas.tsx';
 import ChatHistory from '../components/Chat/ChatBox.tsx';
 
 function Game(): React.JSX.Element {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { roomId } = useParams();
   const {
