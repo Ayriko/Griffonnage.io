@@ -25,7 +25,8 @@ function Game(): React.JSX.Element {
   } = useGameContext();
 
   useEffect(() => {
-    const userId = parseInt(localStorage.getItem('id') ?? '', 10);
+    const id = parseInt(localStorage.getItem('id') ?? '', 10);
+    socket.emit('getUserById', (id));
 
     socket.emit('setupRoom', roomId, userId);
     setRoomId(roomId ?? '1');
@@ -43,7 +44,11 @@ function Game(): React.JSX.Element {
     socket.emit('getUserById', userId);
 
     socket.on('getUserById', (user: User) => {
-      setUser(user);
+      if (!user) {
+        navigate('/');
+      } else {
+        setUser(user);
+      }
     });
 
     setIsLoading(false);
