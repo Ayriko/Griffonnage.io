@@ -1,11 +1,9 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import WordProposition from '../components/WordProposition/WordProposition.tsx';
 import WordToGuess from '../components/WordToGuess/WordToGuess.tsx';
 import { useGameContext } from '../contexts/GameContext.tsx';
 import Timer from '../components/Timer/Timer.tsx';
-import ChatHistory from '../components/Chat/ChatBox.tsx';
-import GameCanvas from '../components/Convas/GameCanvas.tsx';
 import Player from '../components/Player/Player.tsx';
 import Title from '../components/Title/Title.tsx';
 import { socket } from '../socket.ts';
@@ -14,6 +12,7 @@ import GameCanvas from '../components/Convas/GameCanvas.tsx';
 import ChatHistory from '../components/Chat/ChatBox.tsx';
 
 function Game(): React.JSX.Element {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { roomId } = useParams();
   const {
