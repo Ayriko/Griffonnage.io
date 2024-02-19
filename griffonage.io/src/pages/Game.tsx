@@ -10,8 +10,6 @@ import Player from '../components/Player/Player.tsx';
 import Title from '../components/Title/Title.tsx';
 import { socket } from '../socket.ts';
 import type { User } from '../types/User.tsx';
-import GameCanvas from '../components/Convas/GameCanvas.tsx';
-import ChatHistory from '../components/Chat/ChatBox.tsx';
 
 function Game(): React.JSX.Element {
   const navigate = useNavigate();
@@ -27,8 +25,8 @@ function Game(): React.JSX.Element {
   } = useGameContext();
 
   useEffect(() => {
-    const id = parseInt(localStorage.getItem('id') ?? '', 10);
-    socket.emit('getUserById', (id));
+    const userId = parseInt(localStorage.getItem('id') ?? '', 10);
+    socket.emit('getUserById', (userId));
 
     socket.emit('setupRoom', roomId, userId);
     setRoomId(roomId ?? '1');
