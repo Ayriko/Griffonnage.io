@@ -37,6 +37,7 @@ const io = new Server(server);
 const messageHistory: { [key: string]: Chat[] } = {};
 const globalLines: { [key: string]: Line[] } = {};
 const users: User[] = [];
+let currentRooms: string[] = [];
 
 io.on('connection', (socket: Socket) => {
   socket.on('setNewUser', (username: string) => {
@@ -86,6 +87,14 @@ io.on('connection', (socket: Socket) => {
   socket.on('clear', (roomId: string) => {
     globalLines[roomId] = [];
     io.to(roomId).emit('cleared', globalLines);
+  });
+
+  socket.on('getRooms', () => {
+    io.emit('emitRooms', currentRooms || []);
+  });
+
+  socket.on('updateRooms', (rooms: string[]) => {
+    currentRooms = [...rooms];
   });
 });
 
