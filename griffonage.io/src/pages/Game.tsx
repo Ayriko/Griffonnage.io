@@ -1,17 +1,18 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import WordProposition from '../components/WordProposition/WordProposition.tsx';
 import WordToGuess from '../components/WordToGuess/WordToGuess.tsx';
 import { useGameContext } from '../contexts/GameContext.tsx';
 import Timer from '../components/Timer/Timer.tsx';
-import ChatHistory from '../components/chat/ChatBox.tsx';
-import GameCanvas from '../components/convas/GameCanvas.tsx';
+import ChatHistory from '../components/Chat/ChatBox.tsx';
+import GameCanvas from '../components/Convas/GameCanvas.tsx';
 import Player from '../components/Player/Player.tsx';
 import Title from '../components/Title/Title.tsx';
 import { socket } from '../socket.ts';
 import type { User } from '../types/User.tsx';
 
 function Game(): React.JSX.Element {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { roomId } = useParams();
   const {
@@ -19,7 +20,12 @@ function Game(): React.JSX.Element {
   } = useGameContext();
 
   useEffect(() => {
-    const id = parseInt(localStorage.getItem('id') ?? '0', 10);
+    const id = parseInt(localStorage.getItem('id') ?? '', 10);
+    if (!id) {
+      // faire pop un modal pour se créer un username
+      navigate('/');
+    }
+    console.log(id);
     socket.emit('getUserById', (id));
 
     socket.on('getUserById', (user: User) => {

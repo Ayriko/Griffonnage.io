@@ -17,7 +17,6 @@ function ChatHistory(): React.JSX.Element {
     socket.on('message to client', (message: ChatMessage[]) => {
       onGlobaChatMessageEvent(message);
     });
-    console.log(roomId);
 
     socket.emit('firstConnection', roomId);
 
