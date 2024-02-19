@@ -1,5 +1,5 @@
 import React, {
-  createContext, type Dispatch, type SetStateAction, useCallback, useContext, useState,
+  createContext, type Dispatch, type SetStateAction, useContext, useEffect, useState,
 } from 'react';
 import { RoleEnum, type User } from '../types/User.tsx';
 import { socket } from '../socket.ts';
@@ -14,7 +14,6 @@ interface GameContextProps {
   // eslint-disable-next-line no-unused-vars
   startGame: (word: string) => void;
   endGame: () => void;
-  startTimer: () => void;
   user: User;
   setUser: Dispatch<SetStateAction<User>>;
   players: string[];
@@ -40,23 +39,20 @@ function GameProvider({ children }: { children: React.ReactNode }) {
   });
   const [roomId, setRoomId] = useState<string>('');
 
-  const startTimer = useCallback(() => {
+  useEffect(() => {
     // eslint-disable-next-line no-undef
     let interval: string | number | NodeJS.Timeout | undefined;
 
-    if (TimerActive) {
+    if (Word) {
       interval = setInterval(() => {
         setSeconds((prevSeconds) => prevSeconds - 1);
       }, 1000);
-      console.log('intervale', interval);
-    } else {
-      clearInterval(interval);
     }
 
     return () => {
       clearInterval(interval);
     };
-  }, [TimerActive]);
+  }, [Word]);
 
   const startGame = (word: string) => {
     socket.emit('startRound', roomId, word);
@@ -74,10 +70,6 @@ function GameProvider({ children }: { children: React.ReactNode }) {
     setTimerActive(false);
   };
 
-  const addPlayer = (playerName: string) => {
-    setPlayers((prevPlayers) => [...prevPlayers, playerName]);
-  };
-
   return (
     <GameContext.Provider value={{
       Word,
@@ -87,7 +79,6 @@ function GameProvider({ children }: { children: React.ReactNode }) {
       TimerActive,
       setTimerActive,
       startGame,
-      startTimer,
       endGame,
       user,
       setUser,

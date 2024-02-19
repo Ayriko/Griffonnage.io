@@ -21,11 +21,10 @@ function Game(): React.JSX.Element {
     setSeconds,
     endGame, setRoomId,
     setTimerActive,
-    startTimer,
   } = useGameContext();
 
   useEffect(() => {
-    const userId = parseInt(localStorage.getItem('id') ?? '0', 10);
+    const userId = parseInt(localStorage.getItem('id') ?? '', 10);
 
     socket.emit('setupRoom', roomId, userId);
     setRoomId(roomId ?? '1');
@@ -37,7 +36,6 @@ function Game(): React.JSX.Element {
         setSeconds(secondLeft);
         setWord(word);
         setTimerActive(true);
-        startTimer();
       }
     });
 
@@ -48,7 +46,7 @@ function Game(): React.JSX.Element {
     });
 
     setIsLoading(false);
-  }, [roomId, setRoomId, setSeconds, setTimerActive, setUser, setWord, startTimer]);
+  }, []);
 
   useEffect(() => () => {
     console.log('unmount');
