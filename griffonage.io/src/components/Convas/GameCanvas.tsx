@@ -41,6 +41,9 @@ function GameCanvas(): React.JSX.Element {
   };
 
   const handleMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    if (user.role === RoleEnum.GUESSER) {
+      return;
+    }
     setStage(e.target.getStage());
     // no drawing - skipping
     if (!isDrawing.current) {

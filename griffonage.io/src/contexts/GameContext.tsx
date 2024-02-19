@@ -70,6 +70,7 @@ function GameProvider({ children }: { children: React.ReactNode }) {
     }
 
     if (seconds <= 0) {
+      setSeconds(0);
       clearInterval(interval);
       endGame();
     }

@@ -165,6 +165,9 @@ io.on('connection', (socket: Socket) => {
     const artistId = roomGuesser[Math.floor(Math.random() * roomGuesser.length)];
     users[parseInt(artistId, 10) - 1].role = RoleEnum.ARTIST;
 
+    globalLines[roomId] = [];
+    io.to(roomId).emit('cleared', globalLines[roomId]);
+
     rooms[roomId].players.forEach((playerIdInRoom: string) => {
       if (playerIdInRoom === artistId) {
         return;
