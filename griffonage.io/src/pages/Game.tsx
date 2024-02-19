@@ -4,31 +4,54 @@ import WordProposition from '../components/WordProposition/WordProposition.tsx';
 import WordToGuess from '../components/WordToGuess/WordToGuess.tsx';
 import { useGameContext } from '../contexts/GameContext.tsx';
 import Timer from '../components/Timer/Timer.tsx';
-import ChatHistory from '../components/chat/ChatBox.tsx';
-import GameCanvas from '../components/convas/GameCanvas.tsx';
 import Player from '../components/Player/Player.tsx';
 import Title from '../components/Title/Title.tsx';
 import { socket } from '../socket.ts';
 import type { User } from '../types/User.tsx';
+import GameCanvas from '../components/Convas/GameCanvas.tsx';
+import ChatHistory from '../components/Chat/ChatBox.tsx';
 
 function Game(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { roomId } = useParams();
   const {
-    setUser, Word, endGame,
+    setUser,
+    Word,
+    setWord,
+    setSeconds,
+    endGame, setRoomId,
+    setTimerActive,
   } = useGameContext();
 
   useEffect(() => {
-    const id = parseInt(localStorage.getItem('id') ?? '0', 10);
-    socket.emit('getUserById', (id));
+    const userId = parseInt(localStorage.getItem('id') ?? '', 10);
+
+    socket.emit('setupRoom', roomId, userId);
+    setRoomId(roomId ?? '1');
+
+    socket.emit('getRoomConfig', roomId, userId);
+
+    socket.on('getRoomConfig', (word: string, secondLeft: number) => {
+      if (word) {
+        setSeconds(secondLeft);
+        setWord(word);
+        setTimerActive(true);
+      }
+    });
+
+    socket.emit('getUserById', userId);
 
     socket.on('getUserById', (user: User) => {
       setUser(user);
     });
 
-    socket.emit('setupRoomId', roomId);
     setIsLoading(false);
-  }, [roomId, setUser]);
+  }, []);
+
+  useEffect(() => () => {
+    console.log('unmount');
+    setTimerActive(false);
+  }, [setTimerActive]);
 
   if (isLoading) {
     return (<p>loading</p>);

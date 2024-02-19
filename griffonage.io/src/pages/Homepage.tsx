@@ -29,9 +29,9 @@ function Homepage(): React.JSX.Element {
     event.preventDefault();
     socket.emit('setNewUser', username);
 
-    socket.on('getUser', (user: User) => {
-      setUser(user);
-      localStorage.setItem('id', String(user.id));
+    socket.on('getUser', (userData: User) => {
+      setUser(userData);
+      localStorage.setItem('id', String(userData.id));
     });
   };
 
@@ -78,9 +78,14 @@ function Homepage(): React.JSX.Element {
           <GameList />
         )}
         {maxGamesReached && (
-        <p style={{ color: 'red' }}>Le nombre maximum de parties en cours est atteint.</p>
+          <p style={{ color: 'red' }}>Le nombre maximum de parties en cours est atteint.</p>
         )}
-        <button type="button" disabled={user.username === ''} onClick={handleCreateGame} className="bg-blue-500  px-10 py-2 rounded-md text-white ">
+        <button
+          type="button"
+          disabled={user.username === ''}
+          onClick={handleCreateGame}
+          className="bg-blue-500  px-10 py-2 rounded-md text-white "
+        >
           Créer une partie
         </button>
       </div>

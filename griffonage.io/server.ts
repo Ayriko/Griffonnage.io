@@ -30,6 +30,13 @@ type Chat = {
   message: string,
 }
 
+type Room = {
+  wordToGuess: string,
+  roundEnd: Date,
+  players: string[],
+  guessed: number,
+}
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
@@ -37,6 +44,7 @@ const io = new Server(server);
 const messageHistory: { [key: string]: Chat[] } = {};
 const globalLines: { [key: string]: Line[] } = {};
 const users: User[] = [];
+const rooms: { [key: string]: Room } = {};
 let currentRooms: string[] = [];
 
 io.on('connection', (socket: Socket) => {
@@ -56,15 +64,56 @@ io.on('connection', (socket: Socket) => {
     socket.emit('getUserById', users[id - 1]);
   });
 
-  socket.on('setupRoomId', (roomId: string) => {
+  socket.on('setupRoom', (roomId: string, userId: string) => {
     if (!messageHistory[roomId]) {
       messageHistory[roomId] = [];
     }
+
     if (!globalLines[roomId]) {
       globalLines[roomId] = [];
     }
 
+    if (!rooms[roomId]) {
+      rooms[roomId] = {
+        wordToGuess: '',
+        players: [],
+        roundEnd: new Date(),
+        guessed: 0,
+      };
+    }
+
+    if (!rooms[roomId].players.includes(userId)) {
+      const userArtist = rooms[roomId].players.filter(
+        (playerId) => users[parseInt(playerId, 10) - 1].role === RoleEnum.ARTIST,
+      );
+
+      console.log('user artist', userArtist);
+
+      users[parseInt(userId, 10) - 1].role = RoleEnum.ARTIST;
+
+      if (userArtist.length) {
+        console.log('ya des artist');
+        users[parseInt(userId, 10) - 1].role = RoleEnum.GUESSER;
+      }
+
+      rooms[roomId].players.push(userId);
+      rooms[roomId].players = [...new Set(rooms[roomId].players)];
+    }
+
+    console.log('rooms', rooms[roomId], users[parseInt(userId, 10) - 1]);
+
     socket.join(roomId);
+  });
+
+  socket.on('getRoomConfig', (roomId: string) => {
+    io.to(roomId).emit('getRoomConfig', rooms[roomId].wordToGuess, Math.trunc((rooms[roomId].roundEnd.getTime() - new Date().getTime()) / 1000));
+  });
+
+  socket.on('startRound', (roomId: string, word: string) => {
+    rooms[roomId].wordToGuess = word;
+    rooms[roomId].roundEnd = new Date();
+    rooms[roomId].roundEnd.setSeconds(rooms[roomId].roundEnd.getSeconds() + 60);
+    io.to(roomId).emit('setRound', Math.trunc((rooms[roomId].roundEnd.getTime() - new Date().getTime()) / 1000));
   });
 
   socket.on('message', (msg: string, username: string, roomId: string) => {
@@ -93,8 +142,8 @@ io.on('connection', (socket: Socket) => {
     io.emit('emitRooms', currentRooms || []);
   });
 
-  socket.on('updateRooms', (rooms: string[]) => {
-    currentRooms = [...rooms];
+  socket.on('updateRooms', (roomsId: string[]) => {
+    currentRooms = [...roomsId];
   });
 });
 
