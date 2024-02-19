@@ -60,6 +60,7 @@ function Homepage(): React.JSX.Element {
               <input
                 type="text"
                 placeholder="Entrez votre username"
+                required
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
                 className="flex-grow px-4 py-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 placeholder-black"
