@@ -12,7 +12,6 @@ import GameCanvas from '../components/Convas/GameCanvas.tsx';
 import ChatHistory from '../components/Chat/ChatBox.tsx';
 
 function Game(): React.JSX.Element {
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { roomId } = useParams();
   const {

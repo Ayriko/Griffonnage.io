@@ -13,14 +13,15 @@ function MessageForm(): React.JSX.Element {
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    socket.emit('message', value, user.username, roomId);
-
-   if (areWordsIdentical(value, Word)) {
+    if (areWordsIdentical(value, Word)) {
       socket.emit('message', ' à trouvé', user.username,roomId);
-    }
+      socket.emit('userHasGuessed', roomId,  user.id);
 
-    if (isAlmostSimilar(value, Word)) {
-      socket.emit('message', ' est pas loin', user.username,roomId);
+    } else {
+      socket.emit('message', value, user.username, roomId);
+      if (isAlmostSimilar(value, Word)) {
+        socket.emit('message', ' est pas loin', user.username,roomId);
+      }
     }
 
     setValue('');
