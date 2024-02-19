@@ -2,16 +2,26 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { socket } from '../../socket.ts';
 import { useGameContext } from '../../contexts/GameContext.tsx';
+import {areWordsIdentical, isAlmostSimilar} from '../../helpers/genericHelper.ts';
 
 function MessageForm(): React.JSX.Element {
   const [value, setValue] = useState('');
-  const { user } = useGameContext();
+  const { user, Word } = useGameContext();
   const { roomId } = useParams();
+  
 
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     socket.emit('message', value, user.username, roomId);
+
+   if (areWordsIdentical(value, Word)) {
+      socket.emit('message', ' à trouvé', user.username,roomId);
+    }
+
+    if (isAlmostSimilar(value, Word)) {
+      socket.emit('message', ' est pas loin', user.username,roomId);
+    }
 
     setValue('');
   }
