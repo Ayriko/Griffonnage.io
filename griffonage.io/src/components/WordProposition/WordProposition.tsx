@@ -16,7 +16,7 @@ function WordProposition(): React.JSX.Element {
         borderRadius: '10px',
       }}
     >
-      <p> Choissisez un mot</p>
+      <p> Choisissez un mot</p>
       <div className="flex justify-center items-center flex-row ">
         {
           getRandom(wordListData, 3).map((value: string) => (

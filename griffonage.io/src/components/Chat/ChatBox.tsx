@@ -21,13 +21,10 @@ function ChatHistory(): React.JSX.Element {
 
     socket.emit('firstConnection', roomId);
 
-    
-
     socket.on('getMessageHistory', (messageHistory: ChatMessage[]) => {
       onGlobaChatMessageEvent(messageHistory);
     });
   }, []);
-
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -36,8 +33,8 @@ function ChatHistory(): React.JSX.Element {
   }, [globalChatMessage]);
 
   return (
-    <div className={`flex flex-col w-full rounded-md`} style={{ height: '670px' }}>
-      <div ref={chatContainerRef} className={'flex-grow overflow-auto'} style={{ overflowY: 'scroll' }}>
+    <div className="flex flex-col w-full rounded-md" style={{ height: '670px' }}>
+      <div ref={chatContainerRef} className="flex-grow overflow-auto" style={{ overflowY: 'scroll' }}>
         <Chat globalChat={globalChatMessage} />
       </div>
       <div>
